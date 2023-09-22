@@ -1,9 +1,13 @@
 import React, { useState} from "react";
+import './App.css'
+import {ExpandableText, PrimaryButton, SecondaryButton, TextInput, Select, Header} from '@mediwareinc/wellsky-dls-react'
+import { Box } from "@chakra-ui/react";
 
 
 
 function App() {
   const [message, setMessage] = useState('');
+  const [formatedMessage, setFormatedMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [facility, setFacility] = useState('');
   const [mrn, setMrn] = useState('');
@@ -40,6 +44,7 @@ function App() {
       throw new Error(response.status)
     const data = await response.json()
     setMessage(data.message)
+    setFormatedMessage(data.formated_message)
    
   } catch (error)
   {
@@ -75,6 +80,8 @@ const createOrmMessageApi = async () => {
     throw new Error(response.status)
   const data = await response.json()
   setMessage(data.message)
+  setFormatedMessage(data.formated_message)
+
  
 } catch (error)
 {
@@ -82,7 +89,7 @@ const createOrmMessageApi = async () => {
 }
 }
 
-const sendMessageApi = async () => {
+const sendMessageApi = async () =>  {
   try{
     const response = await fetch('http://localhost:8000/routes/sendmessage', 
     { method: "POST", 
@@ -102,58 +109,90 @@ const sendMessageApi = async () => {
   setResult(data.response)
   window.confirm(result)
   
- 
 } catch (error)
 {
   console.error('Error',error)
 }
 }
 
+function clear()
+{
+  setMessage('')
+  setFormatedMessage('')
+}
+
   return (
-    <div className="App-Header">
-      <h2>Select Options:</h2>
-      <p> ADT Message Type:
-        <select id="select1" onChange={event=>setMessageType(event.target.value)}>
-           <option value=" "> </option>
-            <option value="A01">A01 - Admission</option>
-            <option value="A04">A04 - Registration</option>
-            <option value="ORM">ORM - Order</option>
-        </select>
-    </p>
-    <p>Receiving Facility:
-      <input onInput={event=>setFacility(event.target.value)}></input>
-    </p>
-    <p>Patient MRN:
-      <input onInput={event=>setMrn(event.target.value)}></input>
-    </p>
-    <p>Patient Last Name:
-      <input onInput={event=>setLastName(event.target.value)}></input>
-    </p>
-    <p>Patient First Name:
-      <input onInput={event=>setFirstName(event.target.value)}></input>
-    </p>
-    <p>Patient Gender:
-        <select id="select1" onChange={event=>setSex(event.target.value)}>
-           <option value=" "> </option>
-            <option value="M">M</option>
-            <option value="F">F</option>
-        </select>
-      </p>
+    <div className="App">
+      <Box h="250px">
+        <Header title="HL7 Interface Message Generator and Sender"/>
+      </Box>
+      <h1><b>Select Options:</b></h1>
+    <Box h= "500 px" w="100%" className="App">      
+      <Box w = "500px" className="App">
+        <Select
+          placeholder = "Select Message Type"
+          onChange={(e)=>setMessageType(e.target.value)}
+        >
+          <option value="A01">
+            A01 - Admission 
+          </option>
+          <option value="A04">
+            A04 - Registration 
+          </option>
+          <option value="ORM">
+            ORM - Order 
+          </option>
+        </Select>
+        <br/>            
+        <TextInput label="Receiving Facility" inputProps={{defaultValue: '', onChange: e => setFacility(e.target.value), placeholder: '' }}/>
+        <br/>
+        <TextInput label="Patient MRN" inputProps={{defaultValue: '', onChange: e => setMrn(e.target.value), placeholder: '' }}/>
+        <br/>
+        <TextInput label="Patient Last Name" inputProps={{defaultValue: '', onChange: e => setLastName(e.target.value), placeholder: '' }}/>
+        <br/>
+        <TextInput label="Patient First Name" inputProps={{defaultValue: '', onChange: e => setFirstName(e.target.value), placeholder: '' }}/>
+        <br/>
+        <Select
+          placeholder = "Select Patient Gender"
+          onChange={(e)=>setSex(e.target.value)}
+        >
+          <option value="M">
+            Male 
+          </option>
+          <option value="F">
+            Female 
+          </option>
+        </Select>  
+      </Box>
+      <br/>
+        <Box w = "500px" className="App">
+         {messageType === "ORM" ? 
+          <div>
+            <h1><b>Order details:</b></h1>
+            <br/>
+            <TextInput label="Order Type" inputProps={{defaultValue: '', onChange: e => setOrderType(e.target.value), placeholder: '' }}/>
+            <br/>
+            <TextInput label="Order Code" inputProps={{defaultValue: '', onChange: e => setOrderCode(e.target.value), placeholder: '' }}/>
+            <br/>
+            <PrimaryButton onClick={()=>createOrmMessageApi()}>Get ORM Message</PrimaryButton><SecondaryButton onClick={()=>clear()}>Clear</SecondaryButton>
+          </div>:
+          <div> 
+            <PrimaryButton onClick={()=>createAdtMessageApi()}>Get ADT Message</PrimaryButton><SecondaryButton onClick={()=>clear()}>Clear</SecondaryButton>
+          </div>}
+        </Box>
+
+        <br/>
+        {message === ""? <div/>:<Box w = "75%" className="Text">
+        <pre >
+          {formatedMessage}
+        </pre>
+        </Box>}
+        <br/>
+        <PrimaryButton onClick = {() => sendMessageApi()}>
+          Send Message
+        </PrimaryButton>
+    </Box>
       
-    {messageType === "ORM" ? <div><p>Order Type:
-          <input onInput={event=>setOrderType(event.target.value)}></input>
-      </p>
-      <p>Order Code:
-          <input onInput={event=>setOrderCode(event.target.value)}></input>
-      </p>
-      <br/>
-      <button onClick={()=>createOrmMessageApi()}>Get ORM Message</button>
-      </div>:<div> <button onClick={()=>createAdtMessageApi()}>Get ADT Message</button></div>}
-      <button onClick={()=>setMessage('')}>Clear</button>
-      <br/>
-      {<p>{message}</p>}
-      <br/>
-      <button onClick={()=>sendMessageApi()}>Send Message</button>
     </div>
   );
 }

@@ -11,11 +11,11 @@ async def create_adt_message(c:CreateMessageModel):
     gen = MessageGenerator()
     m = gen.generate_adt(c)
 
-    return {"message" : m}
+    return {"message" : m[0], "formated_message": m[1]}
 
 @router.post("/createmessage/orm",tags=["create"])
 async def create_orm_message(o:Orm):
     gen = MessageGenerator()
     m = gen.generate_orm(o)
 
-    return {"message" : m}
+    return {"message" : m[0], "formated_message": m[1]}
