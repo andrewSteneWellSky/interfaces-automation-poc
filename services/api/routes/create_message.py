@@ -11,11 +11,23 @@ async def create_adt_message(c:CreateMessageModel):
     gen = MessageGenerator()
     m = gen.generate_adt(c)
 
-    return {"message" : m[0], "formated_message": m[1]}
+    return {"message" : m}
 
 @router.post("/createmessage/orm",tags=["create"])
 async def create_orm_message(o:Orm):
     gen = MessageGenerator()
     m = gen.generate_orm(o)
 
-    return {"message" : m[0], "formated_message": m[1]}
+    return {"message" : m}
+
+@router.get("/generatemessage/{messageType}", tags=["generate"])
+async def generate_random_message(messageType: str):
+    gen = MessageGenerator()
+    if messageType == "A04" or messageType == "A01":
+        m = gen.generate_random_message(messageType)
+    elif messageType == "ORM":
+        m = gen.generate_random_orm()
+    else:
+        return {"error": "Invalid message type"}
+
+    return {"message": m}

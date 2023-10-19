@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import List
 from datetime import datetime
 
 class CreateMessageModel(BaseModel):
@@ -7,10 +8,10 @@ class CreateMessageModel(BaseModel):
     mrn: str
     patient_last_name: str
     patient_first_name: str
+    patient_middle_name: str = ""
     patient_dob: datetime | None = None
     patient_sex: str
     patient_race: str
     patient_address: str
     patient_phone: str
-
-
+   

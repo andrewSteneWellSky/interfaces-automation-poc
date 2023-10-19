@@ -9,10 +9,8 @@ class InterfaceConnection:
         try:
             connection = s.socket(s.AF_INET, s.SOCK_STREAM)
             connection.connect((self.server_address,self.server_port))
-            print(connection)
             connection.send(data.encode())
             resp = connection.recv(1024)
-            print(resp)
             connection.close()
             return resp.decode()
         except Exception as e:
