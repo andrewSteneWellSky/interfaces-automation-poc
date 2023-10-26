@@ -31,9 +31,13 @@ function App() {
   //Determines if the Generated message is able to be edited
   const [isEditable, setEditable] = useState(false);
 
+  //For determining what server the messages are being sent to
+  const [serverAddress, setServerAddress] = useState("10.16.0.8")
+  const [serverPort, setServerPort] = useState(21003)
+
   const createAdtMessageApi = async () => {
     try{
-      const response = await fetch('http://localhost:8000/routes/createmessage/adt', 
+      const response = await fetch('http://localhost:8000/api/v1/createmessage/adt', 
       { method: "POST", 
         headers:{
           'accept': 'application/json',
@@ -67,7 +71,7 @@ function App() {
 
 const createOrmMessageApi = async () => {
   try{
-    const response = await fetch('http://localhost:8000/routes/createmessage/orm', 
+    const response = await fetch('http://localhost:8000/api/v1/createmessage/orm', 
     { method: "POST", 
       headers:{
         'accept': 'application/json',
@@ -106,7 +110,7 @@ const createOrmMessageApi = async () => {
 
 const sendMessageApi = async () =>  {
   try{
-    const response = await fetch('http://localhost:8000/routes/sendmessage/', 
+    const response = await fetch('http://localhost:8000/api/v1/sendmessage/', 
     { method: "POST", 
       headers:{
         'accept': 'application/json',
@@ -114,7 +118,9 @@ const sendMessageApi = async () =>  {
       },
       body: JSON.stringify(
         {message_type: messageType,
-        message: message
+        message: message,
+        server_address: serverAddress,
+        server_port: serverPort
        })
   });
 
@@ -184,7 +190,6 @@ function removeOrder()
   tempArr.pop()
   setOrders(tempArr)
 }
-
   return (
     <div className="App">
       <Box h="250px">
@@ -292,7 +297,8 @@ function removeOrder()
           <TextArea isDisabled = {!isEditable} height={"250px"} onChange={(e)=> updateMessage(e.target.value)} value={message}/>
         </Box>}
         <br/>
-       { message ===""?<></>:<><Popover content = {result} title = "Message Sent"><PrimaryButton isDisabled = {isEditable} onClick = {() => sendMessageApi()}>
+       { message ===""?<></>:<><li>Server:<Box w= "15%" className="App"><TextInput isDisabled={!isEditable} inputProps={{defaultValue: serverAddress, onChange: e => setServerAddress(e.target.value), placeholder: '' }}/></Box>
+</li><li>Port:<Box w= "15%" className="App"><TextInput isDisabled = {!isEditable} inputProps={{defaultValue: serverPort, onChange: e => setServerPort(e.target.value), placeholder: '' }}/></Box></li><br/><Popover content = {result} title = "Message Sent"><PrimaryButton isDisabled = {isEditable} onClick = {() => sendMessageApi()}>
           Send Message
         </PrimaryButton></Popover>{isEditable ? <SecondaryButton onClick={()=> save()}>Save</SecondaryButton>:<SecondaryButton onClick={()=> setEditable(true)}>Edit</SecondaryButton>}<TertiaryButton onClick={()=>clear()}>Clear</TertiaryButton></>}
     </Box>

@@ -4,7 +4,7 @@ from helpers.message_generator import MessageGenerator
 from models.create_message_model import CreateMessageModel
 from models.orm import Orm
 
-router = APIRouter(prefix="/routes")
+router = APIRouter(prefix="/api/v1")
 
 @router.post("/createmessage/adt",tags=["create"])
 async def create_adt_message(c:CreateMessageModel):

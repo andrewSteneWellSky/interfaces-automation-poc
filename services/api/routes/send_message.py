@@ -3,7 +3,7 @@ from hl7apy.parser import parse_message
 from helpers.interface_connection_helper import InterfaceConnection
 from models.message import Message
 
-router = APIRouter(prefix="/routes")
+router = APIRouter(prefix="/api/v1")
 
 @router.post("/sendmessage/", tags=["send"])
 async def send_message(message:Message):
