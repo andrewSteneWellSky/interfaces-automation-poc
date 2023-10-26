@@ -1,3 +1,6 @@
 .vs
 __pycache__/
 ui_ng/
+.env.local
+
+/services/api/static/build/
